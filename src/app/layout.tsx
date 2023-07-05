@@ -1,3 +1,4 @@
+import Navbar from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Inter } from 'next/font/google';
 
@@ -21,8 +22,9 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className={`${inter.variable} font-sans`}>
+			<body className={`${inter.variable} font-sans p-2`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<Navbar />
 					{children}
 				</ThemeProvider>
 			</body>
