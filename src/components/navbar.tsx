@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/navigation-menu';
 import Link from 'next/link';
 
+import { ModeToggle } from './dark-mode-toggle';
+
 const Navbar = () => {
 	return (
 		<div className="flex justify-between">
@@ -41,6 +43,8 @@ const Navbar = () => {
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
+
+			<ModeToggle />
 		</div>
 	);
 };
