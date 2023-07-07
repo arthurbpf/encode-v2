@@ -5,7 +5,7 @@ import { LuHammer, LuSearch, LuWallet } from 'react-icons/lu';
 
 export default function Home() {
 	return (
-		<main className="min-h-screen flex flex-col items-center justify-center gap-24">
+		<main className="flex-1 flex flex-col items-center justify-center gap-24">
 			<div className="flex flex-col items-center justify-center gap-2">
 				<Image
 					src="/logo.jpg"

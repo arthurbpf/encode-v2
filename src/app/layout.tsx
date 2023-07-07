@@ -1,3 +1,4 @@
+import InstallMetamaskDialog from '@/components/install-metamask-dialog';
 import Navbar from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Inter } from 'next/font/google';
@@ -22,10 +23,13 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className={`${inter.variable} font-sans p-2`}>
+			<body className={`${inter.variable} font-sans`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<Navbar />
-					{children}
+					<div className="min-h-screen p-2 flex flex-col">
+						<Navbar />
+						<InstallMetamaskDialog />
+						{children}
+					</div>
 				</ThemeProvider>
 			</body>
 		</html>
