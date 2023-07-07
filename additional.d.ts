@@ -1,7 +1,3 @@
-interface Window {
-	ethereum: import('ethers').providers.ExternalProvider;
-}
-
 declare namespace NodeJS {
 	export interface ProcessEnv {
 		readonly NEXT_PUBLIC_CONTRACT_ADDRESS: string;

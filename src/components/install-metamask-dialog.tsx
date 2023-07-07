@@ -1,6 +1,6 @@
 'use client';
 
-import { isMetaMaskInstalled } from '@/lib/ethers/utils';
+import { isMetamaskInstalled } from '@/lib/ethers/utils';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -19,7 +19,7 @@ const InstallMetamaskDialog = () => {
 	const [open, setOpen] = useState(false);
 
 	useEffect(() => {
-		setOpen(!isMetaMaskInstalled());
+		setOpen(!isMetamaskInstalled());
 	}, []);
 
 	return (
@@ -27,7 +27,7 @@ const InstallMetamaskDialog = () => {
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
-						It seems you don't have Metamask installed!
+						{"It seems you don't have Metamask installed!"}
 					</AlertDialogTitle>
 					<AlertDialogDescription className="flex flex-col items-center justify-center">
 						<Image
@@ -38,8 +38,9 @@ const InstallMetamaskDialog = () => {
 						/>
 
 						<p className="mb-10">
-							Without Metamask, you won't be able to fully interact with the
-							application.
+							{
+								"Without Metamask, you won't be able to fully interact with the application."
+							}
 						</p>
 					</AlertDialogDescription>
 				</AlertDialogHeader>

@@ -9,22 +9,25 @@ function cleanArray<T>(array: T[]): T[] {
 	return array.length === 1 && array[0] === 0 ? [] : array;
 }
 
-export function isMetaMaskInstalled() {
-	return window && window.ethereum;
+export function isMetamaskInstalled() {
+	return !!window && !!window.ethereum;
 }
 
-export function getProvider() {
+export function getBrowserProvider(): ethers.BrowserProvider | undefined {
 	try {
+		if (!isMetamaskInstalled() || window.ethereum === undefined)
+			throw new Error('MetaMask not found!');
+
 		let provider = new ethers.BrowserProvider(window.ethereum);
 
 		return provider;
 	} catch (e) {
-		console.error('MetaMask not found!');
+		console.error(e);
 	}
 }
 
 export async function getConnectedAccounts() {
-	const provider = getProvider();
+	const provider = getBrowserProvider();
 
 	if (provider) {
 		return await provider.listAccounts();
@@ -72,7 +75,7 @@ interface getEncodeContractParams {
 export async function getEncodeContract({
 	signed = true
 }: getEncodeContractParams) {
-	const provider = getProvider();
+	const provider = getBrowserProvider();
 
 	if (provider) {
 		const signer = signed ? await provider.getSigner() : provider;

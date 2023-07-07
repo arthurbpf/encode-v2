@@ -11,11 +11,17 @@ import {
 	NavigationMenuViewport,
 	navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu';
+import { setAccountsChangedEvent } from '@/lib/ethers/events';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 import { ModeToggle } from './dark-mode-toggle';
 
 const Navbar = () => {
+	useEffect(() => {
+		setAccountsChangedEvent();
+	}, []);
+
 	return (
 		<div className="flex justify-between">
 			<NavigationMenu>

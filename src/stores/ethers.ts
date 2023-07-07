@@ -8,7 +8,7 @@ interface EthersStore {
 
 export const useEthersStore = create<EthersStore>((set, get) => ({
 	userAddress: '',
-	setUserAddress: (userAddress) => set({ userAddress }),
+	setUserAddress: (userAddress) => set({ userAddress: userAddress }),
 	getTrimmedUserAddress: () => {
 		const address = get().userAddress;
 

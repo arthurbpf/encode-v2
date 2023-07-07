@@ -1,6 +1,3 @@
-import { toUtf8String } from 'ethers';
-import { create } from 'ipfs-http-client';
-
 export async function sendData(data: any) {
 	const response = await fetch('/api/ipfs', {
 		method: 'POST',
