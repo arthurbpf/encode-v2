@@ -13,7 +13,7 @@ export function isMetamaskInstalled() {
 	return !!window && !!window.ethereum;
 }
 
-export function getBrowserProvider(): ethers.BrowserProvider | undefined {
+export function getBrowserProvider() {
 	try {
 		if (!isMetamaskInstalled() || window.ethereum === undefined)
 			throw new Error('MetaMask not found!');

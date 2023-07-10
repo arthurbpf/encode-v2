@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 import { ModeToggle } from './dark-mode-toggle';
+import WalletAvatar from './wallet-avatar';
 
 const Navbar = () => {
 	useEffect(() => {
@@ -50,7 +51,10 @@ const Navbar = () => {
 				</NavigationMenuList>
 			</NavigationMenu>
 
-			<ModeToggle />
+			<div className="flex gap-2">
+				<ModeToggle />
+				<WalletAvatar />
+			</div>
 		</div>
 	);
 };
