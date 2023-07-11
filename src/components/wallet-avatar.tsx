@@ -1,5 +1,6 @@
 import { connectWallet } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
+import { AvatarFallback } from '@radix-ui/react-avatar';
 import Link from 'next/link';
 
 import { Avatar, AvatarImage } from './ui/avatar';
@@ -20,7 +21,10 @@ const AvatarButton = ({ userAddress, onClick }: AvatarButtonProps) => {
 		>
 			{userAddress}
 			<Avatar className="h-7 w-7">
-				<AvatarImage src={userAddress ? 'user.svg' : 'lock.svg'} />
+				<AvatarImage
+					className="dark:invert"
+					src={userAddress ? 'user.svg' : 'lock.svg'}
+				/>
 			</Avatar>
 		</Button>
 	);
