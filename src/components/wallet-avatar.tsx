@@ -31,13 +31,13 @@ const AvatarButton = ({ userAddress, onClick }: AvatarButtonProps) => {
 };
 
 const WalletAvatar = () => {
-	const { getTrimmedUserAddress } = useEthersStore();
-	const userAddress = getTrimmedUserAddress();
+	const { userAddress, getTrimmedUserAddress } = useEthersStore();
+	const trimmedUserAddress = getTrimmedUserAddress();
 
-	if (userAddress) {
+	if (trimmedUserAddress) {
 		return (
 			<Link href={`${userAddress}/tokens`}>
-				<AvatarButton userAddress={userAddress} />
+				<AvatarButton userAddress={trimmedUserAddress} />
 			</Link>
 		);
 	} else {

@@ -12,6 +12,7 @@ import {
 	navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu';
 import { setAccountsChangedEvent } from '@/lib/ethers/events';
+import { useEthersStore } from '@/stores/ethers';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
@@ -19,6 +20,7 @@ import { ModeToggle } from './dark-mode-toggle';
 import WalletAvatar from './wallet-avatar';
 
 const Navbar = () => {
+	const { userAddress } = useEthersStore();
 	useEffect(() => {
 		setAccountsChangedEvent();
 	}, []);
@@ -34,13 +36,15 @@ const Navbar = () => {
 							</NavigationMenuLink>
 						</Link>
 					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<Link href="/mint" legacyBehavior passHref>
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Mint
-							</NavigationMenuLink>
-						</Link>
-					</NavigationMenuItem>
+					{userAddress && (
+						<NavigationMenuItem>
+							<Link href="/mint" legacyBehavior passHref>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									Mint
+								</NavigationMenuLink>
+							</Link>
+						</NavigationMenuItem>
+					)}
 					<NavigationMenuItem>
 						<Link href="/tokens" legacyBehavior passHref>
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
