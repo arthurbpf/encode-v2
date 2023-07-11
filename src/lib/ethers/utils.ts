@@ -1,5 +1,5 @@
 import { setUserAddress } from '@/stores/ethers';
-import { BigNumberish, ethers, parseEther } from 'ethers';
+import { BrowserProvider } from 'ethers';
 
 import abi from './Encode.json';
 
@@ -10,7 +10,7 @@ function cleanArray<T>(array: T[]): T[] {
 }
 
 export function isMetamaskInstalled() {
-	return !!window && !!window.ethereum;
+	return typeof window !== 'undefined' && !!window && !!window.ethereum;
 }
 
 export function getBrowserProvider() {
@@ -18,11 +18,24 @@ export function getBrowserProvider() {
 		if (!isMetamaskInstalled() || window.ethereum === undefined)
 			throw new Error('MetaMask not found!');
 
-		let provider = new ethers.BrowserProvider(window.ethereum);
+		let provider = new BrowserProvider(window.ethereum);
 
 		return provider;
 	} catch (e) {
 		console.error(e);
+	}
+}
+
+export async function connectWallet() {
+	try {
+		if (!window.ethereum) {
+			alert('MetaMask was not found!');
+			return;
+		}
+
+		await window.ethereum.request({ method: 'eth_requestAccounts' });
+	} catch (error) {
+		console.error(error);
 	}
 }
 
@@ -36,37 +49,23 @@ export async function getConnectedAccounts() {
 	return [];
 }
 
+export async function getCurrentAccountAddress() {
+	const accounts = await getConnectedAccounts();
+	const address = (await accounts[0]?.getAddress()) || '';
+
+	return address;
+}
+
+/*
+
+
 export async function isConnected() {
 	const accounts = await getConnectedAccounts();
 
 	return accounts.length > 0;
 }
 
-export async function getPrimaryAccountAddress() {
-	const accounts = await getConnectedAccounts();
 
-	const address = (await accounts[0]?.getAddress()) || '';
-
-	setUserAddress(address);
-	return address;
-}
-
-export async function connectWallet() {
-	try {
-		const { ethereum } = window;
-
-		if (!ethereum) {
-			alert('MetaMask encontrada!');
-			return;
-		}
-
-		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-
-		setUserAddress(await getPrimaryAccountAddress());
-	} catch (error) {
-		console.error(error);
-	}
-}
 
 interface getEncodeContractParams {
 	signed?: boolean;
@@ -423,3 +422,4 @@ export function shortenAddress(address: string) {
 		address.substring(address.length - 4, address.length)
 	);
 }
+*/

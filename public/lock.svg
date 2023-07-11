@@ -1,1 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   class="lucide lucide-lock"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="lock.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     id="namedview8"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="36.291667"
+     inkscape:cx="12.013777"
+     inkscape:cy="12.027555"
+     inkscape:window-width="952"
+     inkscape:window-height="1048"
+     inkscape:window-x="4"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg6" />
+  <rect
+     width="14.0404"
+     height="8.5802441"
+     x="4.9798002"
+     y="11.219978"
+     rx="1.5600444"
+     ry="1.5600444"
+     id="rect2"
+     style="stroke-width:1.56004" />
+  <path
+     d="M 8.0998891,11.219978 V 8.0998894 a 3.900111,3.900111 0 0 1 7.8002219,0 v 3.1200886"
+     id="path4"
+     style="stroke-width:1.56004" />
+</svg>

@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import Image from 'next/image';
-import { LuHammer, LuSearch, LuWallet } from 'react-icons/lu';
+
+import IndexPageActionButtons from './action-buttons';
 
 export default function Home() {
 	return (
@@ -16,17 +16,8 @@ export default function Home() {
 				/>
 				<Heading as="h1">Encode</Heading>
 			</div>
-			<div className="flex flex-col gap-2">
-				<Button className="flex gap-2">
-					Connect your wallet <LuWallet />
-				</Button>
-				<Button className="flex gap-2">
-					Start minting <LuHammer />
-				</Button>
-				<Button className="flex gap-2">
-					Check out community created tokens <LuSearch />
-				</Button>
-			</div>
+
+			<IndexPageActionButtons />
 		</main>
 	);
 }
