@@ -1,7 +1,7 @@
 import { setUserAddress } from '@/stores/ethers';
-import { BrowserProvider } from 'ethers';
+import { AlchemyProvider, BrowserProvider, Contract, Provider } from 'ethers';
 
-import abi from './Encode.json';
+import encodeContractAbi from './Encode.json';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
@@ -11,6 +11,13 @@ function cleanArray<T>(array: T[]): T[] {
 
 export function isMetamaskInstalled() {
 	return typeof window !== 'undefined' && !!window && !!window.ethereum;
+}
+
+export function getAlchemyProvider() {
+	try {
+		let provider = new AlchemyProvider('sepolia', process.env.ALCHEMY_API_KEY);
+		return provider;
+	} catch (e) {}
 }
 
 export function getBrowserProvider() {
@@ -49,6 +56,12 @@ export async function getConnectedAccounts() {
 	return [];
 }
 
+export async function isConnected() {
+	const accounts = await getConnectedAccounts();
+
+	return accounts.length > 0;
+}
+
 export async function getCurrentAccountAddress() {
 	const accounts = await getConnectedAccounts();
 	const address = (await accounts[0]?.getAddress()) || '';
@@ -56,32 +69,37 @@ export async function getCurrentAccountAddress() {
 	return address;
 }
 
-/*
-
-
-export async function isConnected() {
-	const accounts = await getConnectedAccounts();
-
-	return accounts.length > 0;
-}
-
-
+type GetProviderType<T extends boolean> = T extends true ? true : boolean;
 
 interface getEncodeContractParams {
 	signed?: boolean;
+	browserProvider?: GetProviderType<boolean>;
 }
 
 export async function getEncodeContract({
-	signed = true
+	signed = false,
+	browserProvider = true
 }: getEncodeContractParams) {
-	const provider = getBrowserProvider();
-
-	if (provider) {
-		const signer = signed ? await provider.getSigner() : provider;
-
-		return new ethers.Contract(contractAddress, abi.abi, signer);
+	let provider;
+	if (browserProvider) {
+		provider = getBrowserProvider();
+		if (provider && signed) {
+			provider = await provider.getSigner();
+		}
+	} else {
+		provider = getAlchemyProvider();
 	}
+
+	return new Contract(contractAddress, encodeContractAbi.abi, provider);
 }
+
+export async function getEncodeAlchemyContract() {
+	const provider = getAlchemyProvider();
+
+	return new Contract(contractAddress, encodeContractAbi.abi, provider);
+}
+
+/*
 
 interface mintTokenParams {
 	address: string;
