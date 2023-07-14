@@ -1,6 +1,7 @@
 import InstallMetamaskDialog from '@/components/install-metamask-dialog';
 import Navbar from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 import { Inter } from 'next/font/google';
 
 import './globals.css';
@@ -30,6 +31,7 @@ export default function RootLayout({
 						<InstallMetamaskDialog />
 						{children}
 					</div>
+					<Toaster />
 				</ThemeProvider>
 			</body>
 		</html>

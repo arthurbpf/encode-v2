@@ -43,18 +43,21 @@ export default function MintPage() {
 		setIsLoading(true);
 		try {
 			await sendData(values);
-			form.reset();
-			setIsLoading(false);
 
 			toast({
-				title: 'Data sent to IPFS'
+				title: 'Data sent to IPFS',
+				description:
+					'Your data has been sent to IPFS, your token is now being minted.'
 			});
+
+			form.reset();
+			setIsLoading(false);
 		} catch (e) {
 			setIsLoading(false);
 			toast({
-				title: 'Unable to send your data',
+				title: 'Unable to mint token',
 				description:
-					'We were unable to send your data to IPFS, please try again later.',
+					'An error occured while minting your token, please try again later.',
 				variant: 'destructive'
 			});
 		}
@@ -129,8 +132,16 @@ export default function MintPage() {
 				/>
 
 				<Button disabled={isLoading} className="flex gap-2" type="submit">
-					{isLoading && <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />}{' '}
-					Mint <LuHammer />
+					{isLoading ? (
+						<>
+							<LuLoader2 className="mr-2 h-4 w-4 animate-spin" /> Minting your
+							token
+						</>
+					) : (
+						<>
+							<LuHammer /> Mint
+						</>
+					)}
 				</Button>
 			</form>
 		</Form>
