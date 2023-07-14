@@ -12,12 +12,18 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
+import { sendData } from '@/lib/ipfs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { LuHammer } from 'react-icons/lu';
+import { LuHammer, LuLoader2 } from 'react-icons/lu';
 import * as z from 'zod';
 
 export default function MintPage() {
+	const [isLoading, setIsLoading] = useState(false);
+	const { toast } = useToast();
+
 	const formSchema = z.object({
 		title: z.string().min(3).max(75),
 		description: z.string().min(3).max(200),
@@ -25,10 +31,34 @@ export default function MintPage() {
 	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema)
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			title: '',
+			description: '',
+			textBody: ''
+		}
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {}
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		setIsLoading(true);
+		try {
+			await sendData(values);
+			form.reset();
+			setIsLoading(false);
+
+			toast({
+				title: 'Data sent to IPFS'
+			});
+		} catch (e) {
+			setIsLoading(false);
+			toast({
+				title: 'Unable to send your data',
+				description:
+					'We were unable to send your data to IPFS, please try again later.',
+				variant: 'destructive'
+			});
+		}
+	}
 
 	return (
 		<Form {...form}>
@@ -98,7 +128,8 @@ export default function MintPage() {
 					)}
 				/>
 
-				<Button className="flex gap-2" type="submit">
+				<Button disabled={isLoading} className="flex gap-2" type="submit">
+					{isLoading && <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />}{' '}
 					Mint <LuHammer />
 				</Button>
 			</form>

@@ -1,15 +1,15 @@
 export async function sendData(data: any) {
-	const response = await fetch('/api/ipfs', {
+	const response = await fetch('/ipfs', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'text/plain'
+			'Content-Type': 'application/json'
 		},
-		body: data
+		body: JSON.stringify(data)
 	});
 
 	const { uri } = await response.json();
 
-	return uri.IpfsHash as string;
+	return uri as string;
 }
 
 export async function retrieveData(hash: string) {
