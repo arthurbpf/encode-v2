@@ -1,17 +1,22 @@
 import TokenMetadataCard from '@/components/token-metadata-card';
 import { Heading } from '@/components/ui/heading';
 import { listTokens } from '@/lib/ethers/utils';
+import Link from 'next/link';
 
 export default async function ListTokensPage() {
 	const tokens = await listTokens();
 
 	return (
-		<div className="p-10 flex flex-col gap-8 flex-1">
+		<div className="p-4 sm:p-8 md:p-10 flex flex-col gap-8 flex-1">
 			<Heading as="h1">Tokens created by the community!</Heading>
 
-			<div>
+			<div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 				{tokens.map((token) => (
-					<TokenMetadataCard key={token.id} token={token} />
+					<Link href={`/tokens/${token.id}`}>
+						<div className="transition-transform hover:scale-105">
+							<TokenMetadataCard key={token.id} token={token} />
+						</div>
+					</Link>
 				))}
 			</div>
 		</div>
