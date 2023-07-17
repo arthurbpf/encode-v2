@@ -1,6 +1,5 @@
 import { TokenInfo } from '@/lib/ethers/types';
 import { formatDistance } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { LuClock } from 'react-icons/lu';
 
 import {
@@ -25,8 +24,7 @@ export default function TokenMetadataCard({ token }: { token: TokenInfo }) {
 			<CardContent>
 				<p>
 					<span className="flex items-center justify-center gap-2 leading-7 [&:not(:first-child)]:mt-2">
-						<LuClock />{' '}
-						{formatDistance(token.creationDate, new Date(), { locale: ptBR })}
+						<LuClock /> {formatDistance(token.creationDate, new Date())}
 					</span>
 				</p>
 			</CardContent>
