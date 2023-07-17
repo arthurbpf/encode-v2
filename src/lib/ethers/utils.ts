@@ -1,7 +1,7 @@
-import { setUserAddress } from '@/stores/ethers';
-import { AlchemyProvider, BrowserProvider, Contract, Provider } from 'ethers';
+import { AlchemyProvider, BrowserProvider, Contract } from 'ethers';
 
 import encodeContractAbi from './Encode.json';
+import { TokenInfo } from './types';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
@@ -99,8 +99,6 @@ export async function getEncodeAlchemyContract() {
 	return new Contract(contractAddress, encodeContractAbi.abi, provider);
 }
 
-/*
-
 interface mintTokenParams {
 	address: string;
 	uri: string;
@@ -124,6 +122,41 @@ export async function mintToken({
 	}
 }
 
+export async function listTokens(): Promise<TokenInfo[]> {
+	const contract = await getEncodeAlchemyContract();
+
+	try {
+		if (contract) {
+			const tokens = await contract.listTokens();
+
+			return cleanArray(
+				tokens.map((token: any) => ({
+					id: Number(token.id),
+					uri: token.uri,
+					creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+					owner: token.owner,
+					metadata: {
+						title: token.metadata.title,
+						description: token.metadata.description
+					},
+					sellingListing: {
+						price: BigInt(token.sellingListing.price),
+						creationDate: new Date(
+							Number(token.sellingListing.creationDate) * 1000
+						)
+					}
+				}))
+			);
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}
+
+/*
 export interface TokenInfo {
 	id: number;
 	uri: string;
@@ -200,37 +233,6 @@ export async function getTokenById(id: number): Promise<TokenInfo> {
 	}
 }
 
-export async function listTokens(): Promise<TokenInfo[]> {
-	const contract = await getEncodeContract({ signed: false });
-
-	try {
-		if (contract) {
-			const tokens = await contract.listTokens();
-
-			return cleanArray(
-				tokens.map((token: any) => ({
-					id: Number(token.id),
-					uri: token.uri,
-					creationDate: new Date(Number(token.metadata.creationDate) * 1000),
-					owner: token.owner,
-					title: token.metadata.title,
-					description: token.metadata.description,
-					sellingListing: {
-						price: BigInt(token.sellingListing.price),
-						creationDate: new Date(
-							Number(token.sellingListing.creationDate) * 1000
-						)
-					}
-				}))
-			);
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-		return [];
-	}
-}
 
 interface CreateBuyingRequestParams {
 	amount: number;

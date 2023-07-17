@@ -7,9 +7,9 @@ export async function sendData(data: any) {
 		body: JSON.stringify(data)
 	});
 
-	const { uri } = await response.json();
+	const { cid } = await response.json();
 
-	return uri as string;
+	return cid as string;
 }
 
 export async function retrieveData(hash: string) {

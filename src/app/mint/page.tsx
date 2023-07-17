@@ -13,7 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
+import { mintToken } from '@/lib/ethers/utils';
 import { sendData } from '@/lib/ipfs';
+import { useEthersStore } from '@/stores/ethers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -23,6 +25,7 @@ import * as z from 'zod';
 export default function MintPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const { toast } = useToast();
+	const { userAddress } = useEthersStore();
 
 	const formSchema = z.object({
 		title: z.string().min(3).max(75),
@@ -42,12 +45,25 @@ export default function MintPage() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setIsLoading(true);
 		try {
-			await sendData(values);
+			const uri = await sendData(values);
 
 			toast({
 				title: 'Data sent to IPFS',
 				description:
-					'Your data has been sent to IPFS, your token is now being minted.'
+					'Your data has been sent to IPFS, accepting the transaction on Metamask will mint your token.'
+			});
+
+			await mintToken({
+				address: userAddress,
+				title: values.title,
+				description: values.description,
+				uri
+			});
+
+			toast({
+				title: 'Transaction sent',
+				description:
+					'Your transaction has been sent to the blockchain, please wait for it to be completed.'
 			});
 
 			form.reset();
