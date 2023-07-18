@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { mintToken } from '@/lib/ethers/utils';
-import { sendData } from '@/lib/ipfs';
+import { sendData } from '@/lib/ipfs/utils';
 import { useEthersStore } from '@/stores/ethers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';

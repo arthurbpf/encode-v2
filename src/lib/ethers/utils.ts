@@ -156,6 +156,39 @@ export async function listTokens(): Promise<TokenInfo[]> {
 	}
 }
 
+export async function getToken(id: number): Promise<TokenInfo | undefined> {
+	const contract = await getEncodeAlchemyContract();
+
+	try {
+		if (id < 0 || isNaN(id)) throw new Error('Invalid id!');
+
+		if (contract) {
+			const token = await contract.getToken(BigInt(id));
+
+			return {
+				id: Number(token.id),
+				uri: token.uri,
+				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+				owner: token.owner,
+				metadata: {
+					title: token.metadata.title,
+					description: token.metadata.description
+				},
+				sellingListing: {
+					price: BigInt(token.sellingListing.price),
+					creationDate: new Date(
+						Number(token.sellingListing.creationDate) * 1000
+					)
+				}
+			};
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 /*
 export interface TokenInfo {
 	id: number;
@@ -201,37 +234,6 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 	}
 }
 
-export async function getTokenById(id: number): Promise<TokenInfo> {
-	const contract = await getEncodeContract({ signed: false });
-
-	try {
-		if (id < 0 || isNaN(id)) throw new Error('Invalid id!');
-
-		if (contract) {
-			const token = await contract.getToken(BigInt(id));
-
-			return {
-				id: Number(token.id),
-				uri: token.uri,
-				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
-				owner: token.owner,
-				title: token.metadata.title,
-				description: token.metadata.description,
-				sellingListing: {
-					price: BigInt(token.sellingListing.price),
-					creationDate: new Date(
-						Number(token.sellingListing.creationDate) * 1000
-					)
-				}
-			};
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-		return {} as TokenInfo;
-	}
-}
 
 
 interface CreateBuyingRequestParams {

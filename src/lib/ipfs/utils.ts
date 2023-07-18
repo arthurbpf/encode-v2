@@ -1,4 +1,6 @@
-export async function sendData(data: any) {
+import { IpfsTokenData } from './types';
+
+export async function sendData(data: IpfsTokenData) {
 	const response = await fetch('/ipfs', {
 		method: 'POST',
 		headers: {
@@ -18,9 +20,9 @@ export async function retrieveData(hash: string) {
 	}
 
 	const response = await fetch(`${ipfsBaseUrl}${hash}`);
-	const data = await response.json();
+	const data = (await response.json()) as IpfsTokenData;
 
-	return data.text;
+	return data.textBody;
 }
 
 export const ipfsBaseUrl = 'https://ipfs.io/ipfs/';
