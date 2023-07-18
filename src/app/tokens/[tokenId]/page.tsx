@@ -4,6 +4,8 @@ import { retrieveData } from '@/lib/ipfs/utils';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 
+export const revalidate = 0;
+
 async function fetchTokenInfo(tokenId: string) {
 	const tokenInfo = await getToken(Number(tokenId));
 	let textBody = '';
