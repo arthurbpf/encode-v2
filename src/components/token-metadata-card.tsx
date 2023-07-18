@@ -15,11 +15,13 @@ export default function TokenMetadataCard({ token }: { token: TokenInfo }) {
 		<Card>
 			<CardHeader>
 				<CardTitle className="flex justify-between">
-					<div>
+					<div className="line-clamp-1">
 						# {token.id} - {token.metadata.title}
 					</div>
 				</CardTitle>
-				<CardDescription>{token.metadata.description}</CardDescription>
+				<CardDescription className="line-clamp-1">
+					{token.metadata.description}
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<p>
