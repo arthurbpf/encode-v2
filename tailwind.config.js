@@ -46,6 +46,10 @@ module.exports = {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				confirmation: {
+					DEFAULT: 'hsl(var(--confirmation))',
+					foreground: 'hsl(var(--confirmation-foreground))'
 				}
 			},
 			borderRadius: {

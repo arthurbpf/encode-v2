@@ -27,7 +27,7 @@ const IndexPageActionButtons = () => {
 				</Link>
 			)}
 
-			<Link href="/search">
+			<Link href="/tokens">
 				<Button className="flex w-full gap-2">
 					<LuSearch />
 					Check out community created tokens

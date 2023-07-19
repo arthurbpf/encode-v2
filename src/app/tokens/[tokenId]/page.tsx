@@ -4,6 +4,8 @@ import { retrieveData } from '@/lib/ipfs/utils';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 
+import TokenDetailsActionButtons from './action-buttons';
+
 async function fetchTokenInfo(tokenId: string) {
 	const tokenInfo = await getToken(Number(tokenId));
 	let textBody = '';
@@ -35,6 +37,8 @@ export default async function TokenDetailsPage({
 				<Heading as="h1">{`#${tokenInfo.id} - ${tokenInfo.metadata.title}`}</Heading>
 				<Heading as="h2">{tokenInfo.metadata.description}</Heading>
 			</div>
+
+			<TokenDetailsActionButtons token={tokenInfo} />
 
 			<div className="text-justify max-w-7xl">
 				<MDXRemote source={textBody} />

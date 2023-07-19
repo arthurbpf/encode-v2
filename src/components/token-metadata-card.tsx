@@ -26,7 +26,8 @@ export default function TokenMetadataCard({ token }: { token: TokenInfo }) {
 			<CardContent>
 				<p>
 					<span className="flex items-center justify-center gap-2 leading-7 [&:not(:first-child)]:mt-2">
-						<LuClock /> {formatDistance(token.creationDate, new Date())}
+						<LuClock />{' '}
+						{formatDistance(token.creationDate, new Date()) + ' ago'}
 					</span>
 				</p>
 			</CardContent>
