@@ -3,7 +3,10 @@ interface TokenMetadata {
 	description: string;
 }
 
-interface SellingListing {}
+interface SellingListing {
+	price: bigint;
+	creationDate: Date;
+}
 
 interface BuyingRequest {}
 

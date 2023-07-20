@@ -1,3 +1,4 @@
+import { trimAddress } from '@/lib/ethers/utils';
 import { create } from 'zustand';
 
 interface EthersStore {
@@ -12,13 +13,7 @@ export const useEthersStore = create<EthersStore>((set, get) => ({
 	getTrimmedUserAddress: () => {
 		const address = get().userAddress;
 
-		if (!address) return '';
-
-		return (
-			address.substring(0, 5) +
-			'...' +
-			address.substring(address.length - 4, address.length)
-		);
+		return trimAddress(address);
 	}
 }));
 
