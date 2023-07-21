@@ -10,6 +10,16 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from '@/components/ui/dialog';
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
 	Sheet,
@@ -22,11 +32,34 @@ import {
 import { TokenInfo } from '@/lib/ethers/types';
 import { trimAddress } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { LuDollarSign, LuList, LuMegaphone, LuTrash } from 'react-icons/lu';
+import * as z from 'zod';
 
 function SellTokenDialog() {
 	const [dialogOpen, setDialogOpen] = useState(false);
+
+	const formSchema = z.object({
+		price: z
+			.string({
+				required_error: 'Price is required'
+			})
+			.transform((val) => Number(val))
+			.pipe(z.number().min(0, 'Price must be greater than 0'))
+	});
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema)
+	});
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+		} catch (e) {
+			console.error(e);
+		}
+	}
 
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -41,17 +74,39 @@ function SellTokenDialog() {
 					<DialogTitle>{'List token for sale'}</DialogTitle>
 					<DialogDescription>
 						{
-							'This will make your token available for immediate purchase for the value specified.'
+							'This will make your token available for immediate purchase for the amout of ether specified.'
 						}
 					</DialogDescription>
 				</DialogHeader>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<FormField
+							control={form.control}
+							name="price"
+							rules={{ required: true }}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Price</FormLabel>
+									<FormControl>
+										<Input type="number" {...field} />
+									</FormControl>
+									<FormDescription>Amount in ether</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-				<DialogFooter>
-					<Button variant={'secondary'} onClick={() => setDialogOpen(false)}>
-						{'Cancel'}
-					</Button>
-					<Button onClick={() => setDialogOpen(false)}>{'Post listing'}</Button>
-				</DialogFooter>
+						<DialogFooter className="mt-4">
+							<Button
+								variant={'secondary'}
+								onClick={() => setDialogOpen(false)}
+							>
+								{'Cancel'}
+							</Button>
+							<Button type="submit">{'Post listing'}</Button>
+						</DialogFooter>
+					</form>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);
