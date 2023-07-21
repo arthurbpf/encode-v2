@@ -1,5 +1,8 @@
 .git/
 
+# Encode contract ABI
+src/lib/ethers/Encode.json
+
 # dependencies
 node_modules/
 .pnp/
