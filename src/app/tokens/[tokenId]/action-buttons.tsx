@@ -29,17 +29,26 @@ import {
 	SheetTitle,
 	SheetTrigger
 } from '@/components/ui/sheet';
+import { useToast } from '@/components/ui/use-toast';
 import { TokenInfo } from '@/lib/ethers/types';
-import { trimAddress } from '@/lib/ethers/utils';
+import { cancelSellingListing, createSellingListing } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { LuDollarSign, LuList, LuMegaphone, LuTrash } from 'react-icons/lu';
+import {
+	LuDollarSign,
+	LuList,
+	LuLoader2,
+	LuMegaphone,
+	LuTrash
+} from 'react-icons/lu';
 import * as z from 'zod';
 
-function SellTokenDialog() {
+function SellTokenDialog({ token }: { token: TokenInfo }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const { toast } = useToast();
 
 	const formSchema = z.object({
 		price: z
@@ -56,8 +65,42 @@ function SellTokenDialog() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+			setIsLoading(true);
+			toast({
+				title: 'Transaction initiated',
+				description: 'Confirm your transaction in Metamask.'
+			});
+
+			const response = await createSellingListing({
+				tokenId: token.id,
+				amount: values.price
+			});
+
+			toast({
+				title: 'Selling listing created',
+				description:
+					'Your listing has been created, wait for Metamask to confirm it.'
+			});
+
+			response.wait().then(() => {
+				toast({
+					title: 'Selling listing created',
+					description: 'Your listing has been confirmed.'
+				});
+			});
+
+			form.reset();
+			setIsLoading(false);
+			setDialogOpen(false);
 		} catch (e) {
-			console.error(e);
+			setIsLoading(false);
+
+			toast({
+				title: 'Error!',
+				description:
+					'An error occured while creating your listing, please try again later.',
+				variant: 'destructive'
+			});
 		}
 	}
 
@@ -66,7 +109,9 @@ function SellTokenDialog() {
 			<DialogTrigger asChild>
 				<Button variant={'confirmation'} className="flex gap-2">
 					<LuMegaphone />
-					List token for sale
+					{token.sellingListing.price > 0n
+						? 'Edit listing price'
+						: 'List token for sale'}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
@@ -99,11 +144,21 @@ function SellTokenDialog() {
 						<DialogFooter className="mt-4">
 							<Button
 								variant={'secondary'}
+								disabled={isLoading}
 								onClick={() => setDialogOpen(false)}
 							>
 								{'Cancel'}
 							</Button>
-							<Button type="submit">{'Post listing'}</Button>
+							<Button type="submit" disabled={isLoading} className="flex gap-2">
+								{isLoading ? (
+									<>
+										<LuLoader2 className="mr-2 h-4 w-4 animate-spin" /> Posting
+										your listing
+									</>
+								) : (
+									'Post listing'
+								)}
+							</Button>
 						</DialogFooter>
 					</form>
 				</Form>
@@ -112,9 +167,88 @@ function SellTokenDialog() {
 	);
 }
 
-function CancelSellingDialog() {
+function CancelSellingDialog({ token }: { token: TokenInfo }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const { toast } = useToast();
 
+	async function onClickDeleteListing() {
+		try {
+			setIsLoading(true);
+			toast({
+				title: 'Transaction initiated',
+				description: 'Confirm your transaction in Metamask.'
+			});
+
+			const response = await cancelSellingListing({ tokenId: token.id });
+
+			toast({
+				title: 'Selling listing canceled',
+				description:
+					'Your listing has been canceled, wait for Metamask to confirm it.'
+			});
+
+			response.wait().then(() => {
+				toast({
+					title: 'Selling listing canceled',
+					description: 'Your cancelation has been confirmed.'
+				});
+			});
+
+			setIsLoading(false);
+			setDialogOpen(false);
+		} catch (e) {
+			setIsLoading(false);
+			console.error(e);
+		}
+	}
+
+	return (
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+			<DialogTrigger asChild>
+				<Button variant={'destructive'} className="flex gap-2">
+					<LuTrash />
+					{'Cancel listing'}
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>{'Cancel the listing for this token'}</DialogTitle>
+					<DialogDescription>
+						{'This token will no longer be available for immediate purchase!'}
+					</DialogDescription>
+				</DialogHeader>
+
+				<DialogFooter className="mt-4">
+					<Button
+						variant={'secondary'}
+						disabled={isLoading}
+						onClick={() => setDialogOpen(false)}
+					>
+						{'Cancel'}
+					</Button>
+					<Button
+						onClick={onClickDeleteListing}
+						type="submit"
+						disabled={isLoading}
+						className="flex gap-2"
+					>
+						{isLoading ? (
+							<>
+								<LuLoader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+								{'Cancel the listing'}
+							</>
+						) : (
+							<>
+								<LuTrash />
+								{'Cancel listing'}
+							</>
+						)}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<DialogTrigger asChild>
@@ -175,19 +309,18 @@ export default function TokenDetailsActionButtons({
 	token: TokenInfo;
 }) {
 	const { userAddress } = useEthersStore();
-	const trimmedUserAddress = trimAddress(userAddress);
 
 	return (
 		<div className="flex gap-2">
-			{token.owner === userAddress && <SellTokenDialog />}
+			{token.owner === userAddress && <SellTokenDialog token={token} />}
 
 			{token.owner === userAddress && token.sellingListing.price !== 0n && (
-				<CancelSellingDialog />
+				<CancelSellingDialog token={token} />
 			)}
 
-			{token.owner !== userAddress && <BidDialog />}
+			{token.owner !== userAddress && <BidDialog token={token} />}
 
-			<ListBidSheet />
+			<ListBidSheet token={token} />
 		</div>
 	);
 }

@@ -53,7 +53,7 @@ export default function MintPage() {
 					'Your data has been sent to IPFS, accepting the transaction on Metamask will mint your token.'
 			});
 
-			await mintToken({
+			const response = await mintToken({
 				address: userAddress,
 				title: values.title,
 				description: values.description,
@@ -64,6 +64,13 @@ export default function MintPage() {
 				title: 'Transaction sent',
 				description:
 					'Your transaction has been sent to the blockchain, please wait for it to be completed.'
+			});
+
+			response.wait().then(() => {
+				toast({
+					title: 'Transaction completed',
+					description: 'Your token has been minted.'
+				});
 			});
 
 			form.reset();

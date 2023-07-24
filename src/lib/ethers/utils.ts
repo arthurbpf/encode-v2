@@ -1,4 +1,11 @@
-import { AlchemyProvider, BrowserProvider, Contract } from 'ethers';
+import {
+	AlchemyProvider,
+	BrowserProvider,
+	Contract,
+	TransactionReceipt,
+	TransactionResponse,
+	parseEther
+} from 'ethers';
 
 import encodeContractAbi from './Encode.json';
 import { TokenInfo } from './types';
@@ -121,12 +128,12 @@ export async function mintToken({
 	uri,
 	title,
 	description
-}: mintTokenParams) {
+}: mintTokenParams): Promise<TransactionResponse> {
 	const contract = await getEncodeContract({ signed: true });
 
 	if (contract) {
-		const tx = contract.safeMint(address, uri, title, description);
-		await tx;
+		const tx = await contract.safeMint(address, uri, title, description);
+		return tx;
 	} else {
 		throw new Error('Contract not found!');
 	}
@@ -196,6 +203,49 @@ export async function getToken(id: number): Promise<TokenInfo | undefined> {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+// Selling listings
+
+interface CreateSellingListingParams {
+	tokenId: number;
+	amount: number;
+}
+
+export async function createSellingListing({
+	tokenId,
+	amount
+}: CreateSellingListingParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+
+	if (contract) {
+		const tx = await contract.createSellingListing(
+			tokenId,
+			parseEther(amount.toString())
+		);
+
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
+	}
+}
+
+interface CancelSellingListingParams {
+	tokenId: number;
+}
+
+export async function cancelSellingListing({
+	tokenId
+}: CancelSellingListingParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+
+	if (contract) {
+		const tx = await contract.cancelSellingListing(tokenId);
+
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
 	}
 }
 
@@ -351,52 +401,7 @@ export async function cancelBuyingRequest({
 	}
 }
 
-interface CreateSellingListingParams {
-	tokenId: number;
-	amount: number;
-}
 
-export async function createSellingListing({
-	tokenId,
-	amount
-}: CreateSellingListingParams) {
-	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.createSellingListing(
-				tokenId,
-				parseEther(amount.toString())
-			);
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-interface CancelSellingListingParams {
-	tokenId: number;
-}
-
-export async function cancelSellingListing({
-	tokenId
-}: CancelSellingListingParams) {
-	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.cancelSellingListing(tokenId);
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
 
 interface BuyTokenParams {
 	tokenId: number;

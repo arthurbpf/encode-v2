@@ -9,10 +9,13 @@ import {
 import { getToken, trimAddress } from '@/lib/ethers/utils';
 import { retrieveData } from '@/lib/ipfs/utils';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { LuUser } from 'react-icons/lu';
 
-import TokenDetailsActionButtons from './action-buttons';
+const TokenDetailsActionButtons = dynamic(() => import('./action-buttons'), {
+	ssr: false
+});
 
 async function fetchTokenInfo(tokenId: string) {
 	const tokenInfo = await getToken(Number(tokenId));
