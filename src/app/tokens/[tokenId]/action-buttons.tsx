@@ -151,6 +151,7 @@ function SellTokenDialog({ token }: { token: TokenInfo }) {
 						<DialogFooter className="mt-4">
 							<Button
 								variant={'secondary'}
+								type="button"
 								disabled={isLoading}
 								onClick={() => setDialogOpen(false)}
 							>
@@ -229,6 +230,7 @@ function CancelSellingDialog({ token }: { token: TokenInfo }) {
 				<DialogFooter className="mt-4">
 					<Button
 						variant={'secondary'}
+						type="button"
 						disabled={isLoading}
 						onClick={() => setDialogOpen(false)}
 					>
@@ -322,6 +324,7 @@ function BuyTokenDialog({ token }: { token: TokenInfo }) {
 				<DialogFooter className="mt-4">
 					<Button
 						variant={'secondary'}
+						type="button"
 						disabled={isLoading}
 						onClick={() => setDialogOpen(false)}
 					>
