@@ -425,7 +425,7 @@ function BidDialog({ token }: { token: TokenInfo }) {
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>{'Make a offer to the seller'}</DialogTitle>
-					<DialogDescription>
+					<DialogDescription className="text-justify">
 						{
 							'This will transfer the amount specified to the contract. If the seller accepts your offer, the amount held by the contract will be traded for the ownership of this token, otherwise, your funds will be returned to you.'
 						}
