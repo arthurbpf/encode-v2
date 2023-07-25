@@ -31,16 +31,23 @@ import {
 } from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
 import { TokenInfo } from '@/lib/ethers/types';
-import { cancelSellingListing, createSellingListing } from '@/lib/ethers/utils';
+import {
+	buyToken,
+	cancelSellingListing,
+	createSellingListing
+} from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { formatEther } from 'ethers';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaEthereum } from 'react-icons/fa';
 import {
 	LuDollarSign,
 	LuList,
 	LuLoader2,
 	LuMegaphone,
+	LuShoppingCart,
 	LuTrash
 } from 'react-icons/lu';
 import * as z from 'zod';
@@ -251,6 +258,99 @@ function CancelSellingDialog({ token }: { token: TokenInfo }) {
 	);
 }
 
+function BuyTokenDialog({ token }: { token: TokenInfo }) {
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const { toast } = useToast();
+
+	async function onClickBuyToken() {
+		try {
+			setIsLoading(true);
+			toast({
+				title: 'Transaction initiated',
+				description: 'Confirm your transaction in Metamask.'
+			});
+
+			const response = await buyToken({
+				tokenId: token.id,
+				amount: token.sellingListing.price
+			});
+
+			toast({
+				title: 'Transaction sent',
+				description:
+					'Your transaction has been sent, wait for Metamask to confirm it.'
+			});
+
+			response.wait().then(() => {
+				toast({
+					title: 'Transaction confirmed',
+					description:
+						'Your transaction has been confirmed. The token is now yours!'
+				});
+			});
+
+			setIsLoading(false);
+			setDialogOpen(false);
+		} catch (e) {
+			setIsLoading(false);
+			console.error(e);
+		}
+	}
+
+	return (
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+			<DialogTrigger asChild>
+				<Button variant={'confirmation'} className="flex gap-2">
+					<LuShoppingCart />
+					{'Buy token'}
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>{'Buy this token immediately'}</DialogTitle>
+					<DialogDescription>
+						{'This token will be bought for the amout specified below'}
+					</DialogDescription>
+				</DialogHeader>
+
+				<div className="w-full text-2xl flex gap-2 items-center justify-center">
+					{formatEther(token.sellingListing.price)}
+					<FaEthereum />
+				</div>
+
+				<DialogFooter className="mt-4">
+					<Button
+						variant={'secondary'}
+						disabled={isLoading}
+						onClick={() => setDialogOpen(false)}
+					>
+						{'Cancel'}
+					</Button>
+					<Button
+						onClick={onClickBuyToken}
+						type="submit"
+						disabled={isLoading}
+						className="flex gap-2"
+					>
+						{isLoading ? (
+							<>
+								<LuLoader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+								{'Buying the token'}
+							</>
+						) : (
+							<>
+								<LuShoppingCart />
+								{'Buy token'}
+							</>
+						)}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
 function BidDialog({ token }: { token: TokenInfo }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -305,6 +405,10 @@ export default function TokenDetailsActionButtons({
 
 			{token.owner === userAddress && token.sellingListing.price !== 0n && (
 				<CancelSellingDialog token={token} />
+			)}
+
+			{token.owner !== userAddress && token.sellingListing.price > 0n && (
+				<BuyTokenDialog token={token} />
 			)}
 
 			{token.owner !== userAddress && <BidDialog token={token} />}

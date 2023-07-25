@@ -249,6 +249,27 @@ export async function cancelSellingListing({
 	}
 }
 
+interface BuyTokenParams {
+	tokenId: number;
+	amount: bigint;
+}
+
+export async function buyToken({
+	tokenId,
+	amount
+}: BuyTokenParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+
+	if (contract) {
+		const tx = await contract.buyToken(tokenId, { value: amount });
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
+	}
+}
+
+// Buying bids
+
 /*
 export interface TokenInfo {
 	id: number;
@@ -403,25 +424,6 @@ export async function cancelBuyingRequest({
 
 
 
-interface BuyTokenParams {
-	tokenId: number;
-	amount: BigNumberish;
-}
-
-export async function buyToken({ tokenId, amount }: BuyTokenParams) {
-	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.buyToken(tokenId, { value: amount });
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
 
 export interface SellingListing {
 	price: BigNumberish;
