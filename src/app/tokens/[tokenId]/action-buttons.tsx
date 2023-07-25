@@ -249,20 +249,9 @@ function CancelSellingDialog({ token }: { token: TokenInfo }) {
 			</DialogContent>
 		</Dialog>
 	);
-	return (
-		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-			<DialogTrigger asChild>
-				<Button variant={'destructive'} className="flex gap-2">
-					<LuTrash />
-					Delete selling listing
-				</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]"></DialogContent>
-		</Dialog>
-	);
 }
 
-function BidDialog() {
+function BidDialog({ token }: { token: TokenInfo }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 	return (
@@ -278,7 +267,7 @@ function BidDialog() {
 	);
 }
 
-function ListBidSheet() {
+function ListBidSheet({ token }: { token: TokenInfo }) {
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
