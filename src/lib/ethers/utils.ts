@@ -270,6 +270,26 @@ export async function buyToken({
 
 // Buying bids
 
+interface CreateBuyingRequestParams {
+	amount: number;
+	tokenId: number;
+}
+
+export async function createBuyingRequest({
+	tokenId,
+	amount
+}: CreateBuyingRequestParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+	if (contract) {
+		const tx = await contract.createBuyingRequest(tokenId, {
+			value: parseEther(amount.toString())
+		});
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
+	}
+}
+
 /*
 export interface TokenInfo {
 	id: number;
@@ -317,25 +337,6 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 
 
 
-interface CreateBuyingRequestParams {
-	amount: number;
-	tokenId: number;
-}
-
-export async function createBuyingRequest({
-	tokenId,
-	amount
-}: CreateBuyingRequestParams) {
-	const contract = await getEncodeContract({ signed: true });
-	if (contract) {
-		const tx = contract.createBuyingRequest(tokenId, {
-			value: parseEther(amount.toString())
-		});
-		await tx;
-	} else {
-		throw new Error('Contract not found!');
-	}
-}
 
 export interface BuyingRequest {
 	id: number;

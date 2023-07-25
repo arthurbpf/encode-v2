@@ -34,6 +34,7 @@ import { TokenInfo } from '@/lib/ethers/types';
 import {
 	buyToken,
 	cancelSellingListing,
+	createBuyingRequest,
 	createSellingListing
 } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
@@ -86,13 +87,13 @@ function SellTokenDialog({ token }: { token: TokenInfo }) {
 			toast({
 				title: 'Selling listing created',
 				description:
-					'Your listing has been created, wait for Metamask to confirm it.'
+					'Your listing transaction has been created, wait for Metamask to confirm it.'
 			});
 
 			response.wait().then(() => {
 				toast({
 					title: 'Selling listing created',
-					description: 'Your listing has been confirmed.'
+					description: 'Your listing transaction has been confirmed.'
 				});
 			});
 
@@ -193,13 +194,13 @@ function CancelSellingDialog({ token }: { token: TokenInfo }) {
 			toast({
 				title: 'Selling listing canceled',
 				description:
-					'Your listing has been canceled, wait for Metamask to confirm it.'
+					'Your listing transaction has been canceled, wait for Metamask to confirm it.'
 			});
 
 			response.wait().then(() => {
 				toast({
 					title: 'Selling listing canceled',
-					description: 'Your cancelation has been confirmed.'
+					description: 'Your cancelation transaction has been confirmed.'
 				});
 			});
 
@@ -281,14 +282,14 @@ function BuyTokenDialog({ token }: { token: TokenInfo }) {
 			toast({
 				title: 'Transaction sent',
 				description:
-					'Your transaction has been sent, wait for Metamask to confirm it.'
+					'Your transaction transaction has been sent, wait for Metamask to confirm it.'
 			});
 
 			response.wait().then(() => {
 				toast({
 					title: 'Transaction confirmed',
 					description:
-						'Your transaction has been confirmed. The token is now yours!'
+						'Your transaction transaction has been confirmed. The token is now yours!'
 				});
 			});
 
@@ -356,16 +357,121 @@ function BuyTokenDialog({ token }: { token: TokenInfo }) {
 
 function BidDialog({ token }: { token: TokenInfo }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const { toast } = useToast();
+
+	const formSchema = z.object({
+		price: z
+			.string({
+				required_error: 'Price is required'
+			})
+			.transform((val) => Number(val))
+			.pipe(z.number().min(0, 'Price must be greater than 0'))
+	});
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema)
+	});
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			setIsLoading(true);
+			toast({
+				title: 'Transaction initiated',
+				description: 'Confirm your transaction in Metamask.'
+			});
+
+			const response = await createBuyingRequest({
+				tokenId: token.id,
+				amount: values.price
+			});
+
+			toast({
+				title: 'Buying request created',
+				description:
+					'Your buying request transaction has been created, wait for Metamask to confirm it.'
+			});
+
+			response.wait().then(() => {
+				toast({
+					title: 'Buying request created',
+					description: 'Your buying request transaction has been confirmed.'
+				});
+			});
+
+			form.reset();
+			setIsLoading(false);
+			setDialogOpen(false);
+		} catch (e) {
+			setIsLoading(false);
+
+			toast({
+				title: 'Error!',
+				description:
+					'An error occured while creating your buying request, please try again later.',
+				variant: 'destructive'
+			});
+		}
+	}
 
 	return (
 		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<DialogTrigger asChild>
 				<Button variant={'confirmation'} className="flex gap-2">
 					<LuDollarSign />
-					Make a bid!
+					{'Make a bid!'}
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]"></DialogContent>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>{'Make a offer to the seller'}</DialogTitle>
+					<DialogDescription>
+						{
+							'This will transfer the amount specified to the contract. If the seller accepts your offer, the amount held by the contract will be traded for the ownership of this token, otherwise, your funds will be returned to you.'
+						}
+					</DialogDescription>
+				</DialogHeader>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<FormField
+							control={form.control}
+							name="price"
+							rules={{ required: true }}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Price</FormLabel>
+									<FormControl>
+										<Input type="number" {...field} />
+									</FormControl>
+									<FormDescription>Amount in ether</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<DialogFooter className="mt-4">
+							<Button
+								variant={'secondary'}
+								type="button"
+								disabled={isLoading}
+								onClick={() => setDialogOpen(false)}
+							>
+								{'Cancel'}
+							</Button>
+							<Button type="submit" disabled={isLoading} className="flex gap-2">
+								{isLoading ? (
+									<>
+										<LuLoader2 className="mr-2 h-4 w-4 animate-spin" /> Posting
+										your listing
+									</>
+								) : (
+									'Make offer'
+								)}
+							</Button>
+						</DialogFooter>
+					</form>
+				</Form>
+			</DialogContent>
 		</Dialog>
 	);
 }
