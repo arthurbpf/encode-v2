@@ -20,15 +20,6 @@ import {
 	FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger
-} from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
 import { TokenInfo } from '@/lib/ethers/types';
 import {
@@ -40,6 +31,7 @@ import {
 import { useEthersStore } from '@/stores/ethers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { formatEther } from 'ethers';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEthereum } from 'react-icons/fa';
@@ -161,8 +153,8 @@ function SellTokenDialog({ token }: { token: TokenInfo }) {
 							<Button type="submit" disabled={isLoading} className="flex gap-2">
 								{isLoading ? (
 									<>
-										<LuLoader2 className="mr-2 h-4 w-4 animate-spin" /> Posting
-										your listing
+										<LuLoader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+										{'Posting your listing'}
 									</>
 								) : (
 									'Post listing'
@@ -476,28 +468,14 @@ function BidDialog({ token }: { token: TokenInfo }) {
 	);
 }
 
-function ListBidSheet({ token }: { token: TokenInfo }) {
+async function ListBidDialog({ token }: { token: TokenInfo }) {
 	return (
-		<Sheet>
-			<SheetTrigger asChild>
-				<Button className="flex gap-2">
-					<LuList />
-					View buying bids
-				</Button>
-			</SheetTrigger>
-			<SheetContent side="right" className="flex flex-col">
-				<SheetHeader>
-					<SheetTitle>Bids for this token</SheetTitle>
-					<SheetDescription>
-						These are the bids that have been made for this token.
-					</SheetDescription>
-				</SheetHeader>
-				<ScrollArea>
-					<div className="grid p-6"></div>
-					<ScrollBar />
-				</ScrollArea>
-			</SheetContent>
-		</Sheet>
+		<Link href={`/tokens/${token.id}/offers`}>
+			<Button className="flex gap-2">
+				<LuList />
+				View buying bids
+			</Button>
+		</Link>
 	);
 }
 
@@ -522,7 +500,7 @@ export default function TokenDetailsActionButtons({
 
 			{token.owner !== userAddress && <BidDialog token={token} />}
 
-			<ListBidSheet token={token} />
+			<ListBidDialog token={token} />
 		</div>
 	);
 }

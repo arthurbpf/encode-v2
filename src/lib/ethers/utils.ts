@@ -2,13 +2,12 @@ import {
 	AlchemyProvider,
 	BrowserProvider,
 	Contract,
-	TransactionReceipt,
 	TransactionResponse,
 	parseEther
 } from 'ethers';
 
 import encodeContractAbi from './Encode.json';
-import { TokenInfo } from './types';
+import { BuyingRequest, TokenInfo } from './types';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
@@ -290,6 +289,37 @@ export async function createBuyingRequest({
 	}
 }
 
+interface GetBuyingRequestsParams {
+	tokenId: number;
+}
+
+export async function getBuyingRequests({
+	tokenId
+}: GetBuyingRequestsParams): Promise<BuyingRequest[]> {
+	const contract = await getEncodeAlchemyContract();
+
+	try {
+		if (contract) {
+			const requests = await contract.getBuyingRequests(tokenId);
+
+			return cleanArray(
+				requests.map((request: any) => ({
+					id: Number(request.id),
+					buyer: request.buyer,
+					offer: request.offer,
+					creationDate: new Date(Number(request.timestamp) * 1000),
+					status: request.status
+				}))
+			);
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}
+
 /*
 export interface TokenInfo {
 	id: number;
@@ -338,44 +368,6 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 
 
 
-export interface BuyingRequest {
-	id: number;
-	buyer: string;
-	offer: BigNumberish;
-	creationDate: Date;
-	status: number;
-}
-
-interface GetBuyingRequestsParams {
-	tokenId: number;
-}
-
-export async function getBuyingRequests({
-	tokenId
-}: GetBuyingRequestsParams): Promise<BuyingRequest[]> {
-	const contract = await getEncodeContract({ signed: false });
-
-	try {
-		if (contract) {
-			const requests = await contract.getBuyingRequests(tokenId);
-
-			return cleanArray(
-				requests.map((request: any) => ({
-					id: Number(request.id),
-					buyer: request.buyer,
-					offer: request.offer,
-					creationDate: new Date(Number(request.timestamp) * 1000),
-					status: request.status
-				}))
-			);
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-		return [];
-	}
-}
 
 interface AcceptBuyingRequestParams {
 	tokenId: number;
