@@ -8,13 +8,8 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table';
-import {
-	BuyingRequest,
-	BuyingRequestStatus,
-	BuyingRequestStatusLabel,
-	TokenInfo
-} from '@/lib/ethers/types';
-import { getEnumDescription } from '@/lib/utils';
+import { BuyingRequest, TokenInfo } from '@/lib/ethers/types';
+import { acceptBuyingRequest } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
 import {
 	ColumnDef,
@@ -27,6 +22,7 @@ import { formatEther } from 'ethers';
 import { FaEthereum } from 'react-icons/fa';
 
 import { Button } from './ui/button';
+import { toast } from './ui/use-toast';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -34,7 +30,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 const columns: ColumnDef<BuyingRequest>[] = [
-	{ header: 'Id', accessorKey: 'id' },
 	{ header: 'Buyer', accessorKey: 'buyer' },
 	{
 		header: 'Offer',
@@ -70,13 +65,57 @@ const columns: ColumnDef<BuyingRequest>[] = [
 	}
 ];
 
+async function onClickAcceptOffer({
+	tokenId,
+	offerId
+}: {
+	tokenId: number;
+	offerId: number;
+}) {
+	try {
+		toast({
+			title: 'Accepting offer',
+			description: 'Confirm your transaction in Metamask.'
+		});
+		const receipt = await acceptBuyingRequest({ tokenId, requestId: offerId });
+
+		toast({
+			title: 'Offer accepted',
+			description: 'Offer has been accepted. Wait for Metamask confirmation.'
+		});
+
+		receipt.wait().then(() => {
+			toast({
+				title: 'Offer accepted',
+				description: 'The token has been transfered to the buyer successfully.'
+			});
+		});
+	} catch (e) {
+		toast({
+			title: 'Unable to accept offer',
+			description:
+				'We were unable to accept your offer. Please try again later.',
+			variant: 'destructive'
+		});
+	}
+}
+
 const actionColumn: ColumnDef<BuyingRequest> = {
 	id: 'action',
 	header: 'Action',
 	accessorKey: 'action',
 	cell: ({ row }) => {
-		const status = row.getValue('id') as number;
-		return <Button>Accept</Button>;
+		const offer = row.original;
+		const { tokenId, id: offerId } = offer;
+		return (
+			<Button
+				onClick={() => {
+					onClickAcceptOffer({ tokenId, offerId });
+				}}
+			>
+				Accept
+			</Button>
+		);
 	}
 };
 

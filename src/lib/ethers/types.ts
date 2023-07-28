@@ -24,6 +24,7 @@ export const BuyingRequestStatusLabel: {
 
 export interface BuyingRequest {
 	id: number;
+	tokenId: number;
 	buyer: string;
 	offer: bigint;
 	creationDate: Date;

@@ -11,14 +11,15 @@ export default async function OffersPage({
 }: {
 	params: { tokenId: string };
 }) {
-	const buyingRequests = await getBuyingRequests({
-		tokenId: Number(params.tokenId)
-	});
 	const tokenInfo = await getToken(Number(params.tokenId));
 
 	if (!tokenInfo) {
 		notFound();
 	}
+
+	const buyingRequests = await getBuyingRequests({
+		tokenId: tokenInfo.id
+	});
 
 	return (
 		<div className="flex-1 flex flex-col p-4 gap-6">

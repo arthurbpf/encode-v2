@@ -305,6 +305,7 @@ export async function getBuyingRequests({
 			return cleanArray(
 				requests.map((request: any) => ({
 					id: Number(request.id),
+					tokenId,
 					buyer: request.buyer,
 					offer: request.offer,
 					creationDate: new Date(Number(request.timestamp) * 1000),
@@ -317,6 +318,44 @@ export async function getBuyingRequests({
 	} catch (error) {
 		console.error(error);
 		return [];
+	}
+}
+
+interface AcceptBuyingRequestParams {
+	tokenId: number;
+	requestId: number;
+}
+
+export async function acceptBuyingRequest({
+	tokenId,
+	requestId
+}: AcceptBuyingRequestParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+
+	if (contract) {
+		const tx = await contract.acceptBuyingRequest(tokenId, requestId);
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
+	}
+}
+
+interface CancelBuyingRequestParams {
+	tokenId: number;
+	requestId: number;
+}
+
+export async function cancelBuyingRequest({
+	tokenId,
+	requestId
+}: CancelBuyingRequestParams): Promise<TransactionResponse> {
+	const contract = await getEncodeContract({ signed: true });
+
+	if (contract) {
+		const tx = await contract.cancelBuyingRequest(tokenId, requestId);
+		return tx;
+	} else {
+		throw new Error('Contract not found!');
 	}
 }
 
@@ -369,51 +408,7 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 
 
 
-interface AcceptBuyingRequestParams {
-	tokenId: number;
-	requestId: number;
-}
 
-export async function acceptBuyingRequest({
-	tokenId,
-	requestId
-}: AcceptBuyingRequestParams) {
-	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.acceptBuyingRequest(tokenId, requestId);
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-interface CancelBuyingRequestParams {
-	tokenId: number;
-	requestId: number;
-}
-
-export async function cancelBuyingRequest({
-	tokenId,
-	requestId
-}: CancelBuyingRequestParams) {
-	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.cancelBuyingRequest(tokenId, requestId);
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
 
 
 
