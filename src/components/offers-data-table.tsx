@@ -9,7 +9,7 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { BuyingRequest, TokenInfo } from '@/lib/ethers/types';
-import { acceptBuyingRequest } from '@/lib/ethers/utils';
+import { acceptBuyingRequest, cancelBuyingRequest } from '@/lib/ethers/utils';
 import { useEthersStore } from '@/stores/ethers';
 import {
 	ColumnDef,
@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 const columns: ColumnDef<BuyingRequest>[] = [
+	{ header: 'Id', accessorKey: 'id' },
 	{ header: 'Buyer', accessorKey: 'buyer' },
 	{
 		header: 'Offer',
@@ -93,17 +94,15 @@ async function onClickAcceptOffer({
 	} catch (e) {
 		toast({
 			title: 'Unable to accept offer',
-			description:
-				'We were unable to accept your offer. Please try again later.',
+			description: 'We were unable to accept offer. Please try again later.',
 			variant: 'destructive'
 		});
 	}
 }
 
-const actionColumn: ColumnDef<BuyingRequest> = {
-	id: 'action',
+const acceptOfferColumn: ColumnDef<BuyingRequest> = {
+	id: 'acceptOffer',
 	header: 'Action',
-	accessorKey: 'action',
 	cell: ({ row }) => {
 		const offer = row.original;
 		const { tokenId, id: offerId } = offer;
@@ -114,6 +113,68 @@ const actionColumn: ColumnDef<BuyingRequest> = {
 				}}
 			>
 				Accept
+			</Button>
+		);
+	}
+};
+
+async function onClickCancelOffer({
+	tokenId,
+	offerId
+}: {
+	tokenId: number;
+	offerId: number;
+}) {
+	try {
+		toast({
+			title: 'Cancelling offer',
+			description: 'Confirm your transaction in Metamask.'
+		});
+		const receipt = await cancelBuyingRequest({ tokenId, requestId: offerId });
+
+		toast({
+			title: 'Offer canceled',
+			description: 'Offer has been canceled. Wait for Metamask confirmation.'
+		});
+
+		receipt.wait().then(() => {
+			toast({
+				title: 'Offer canceled',
+				description:
+					'Offer funds were transfered back to your wallet successfully.'
+			});
+		});
+	} catch (e) {
+		toast({
+			title: 'Unable to cancel offer',
+			description:
+				'We were unable to cancel your offer. Please try again later.',
+			variant: 'destructive'
+		});
+	}
+}
+
+const cancelOfferColumn: ColumnDef<BuyingRequest> = {
+	id: 'cancelOffer',
+	header: 'Action',
+	cell: ({ row }) => {
+		const offer = row.original;
+		const { buyer, tokenId, id: offerId } = offer;
+
+		const { userAddress } = useEthersStore.getState();
+
+		if (userAddress != buyer) {
+			return <></>;
+		}
+
+		return (
+			<Button
+				variant={'destructive'}
+				onClick={() => {
+					onClickCancelOffer({ tokenId, offerId });
+				}}
+			>
+				Cancel
 			</Button>
 		);
 	}
@@ -186,9 +247,10 @@ export default async function OffersTable({
 }) {
 	const { userAddress } = useEthersStore();
 	let finalColumns = [...columns];
-	if (userAddress == token.owner) {
-		finalColumns.push(actionColumn);
-	}
+
+	finalColumns.push(
+		userAddress == token.owner ? acceptOfferColumn : cancelOfferColumn
+	);
 
 	return <DataTable columns={finalColumns} data={buyingRequests} />;
 }
