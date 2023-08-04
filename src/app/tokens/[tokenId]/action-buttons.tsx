@@ -471,7 +471,7 @@ function BidDialog({ token }: { token: TokenInfo }) {
 async function ListBidDialog({ token }: { token: TokenInfo }) {
 	return (
 		<Link href={`/tokens/${token.id}/offers`}>
-			<Button className="flex gap-2">
+			<Button variant={'secondary'} className="flex gap-2">
 				<LuList />
 				View buying bids
 			</Button>
