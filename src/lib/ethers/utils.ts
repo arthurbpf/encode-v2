@@ -172,6 +172,42 @@ export async function listTokens(): Promise<TokenInfo[]> {
 	}
 }
 
+export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
+	const contract = await getEncodeAlchemyContract();
+
+	try {
+		if (contract) {
+			const tokens = await contract.getTokensOfOwner(address);
+
+			if (tokens.length === 0) return [];
+
+			return cleanArray(
+				tokens.map((token: any) => ({
+					id: Number(token.id),
+					uri: token.uri,
+					creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+					owner: token.owner,
+					metadata: {
+						title: token.metadata.title,
+						description: token.metadata.description
+					},
+					sellingListing: {
+						price: BigInt(token.sellingListing.price),
+						creationDate: new Date(
+							Number(token.sellingListing.creationDate) * 1000
+						)
+					}
+				}))
+			);
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}
+
 export async function getToken(id: number): Promise<TokenInfo | undefined> {
 	const contract = await getEncodeAlchemyContract();
 
@@ -373,36 +409,6 @@ export interface TokenInfo {
 	};
 }
 
-export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
-	const contract = await getEncodeContract({ signed: false });
-
-	try {
-		if (contract) {
-			const tokens = await contract.getTokensOfOwner(address);
-
-			if (tokens.length === 0) return [];
-
-			return tokens.map((token: any) => ({
-				id: Number(token.id),
-				uri: token.uri,
-				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
-				title: token.metadata.title,
-				description: token.metadata.description,
-				sellingListing: {
-					price: BigInt(token.sellingListing.price),
-					creationDate: new Date(
-						Number(token.sellingListing.creationDate) * 1000
-					)
-				}
-			}));
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
-		return [];
-	}
-}
 
 
 

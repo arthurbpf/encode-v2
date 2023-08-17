@@ -26,7 +26,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={`${inter.variable} font-sans`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<div className="min-h-screen p-2 flex flex-col">
+					<div className="min-h-screen p-6 flex flex-col">
 						<Navbar />
 						<InstallMetamaskDialog />
 						{children}

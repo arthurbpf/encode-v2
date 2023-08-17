@@ -36,7 +36,7 @@ const WalletAvatar = () => {
 
 	if (trimmedUserAddress) {
 		return (
-			<Link href={`${userAddress}/tokens`}>
+			<Link href={`/wallet/${userAddress}/tokens`}>
 				<AvatarButton userAddress={trimmedUserAddress} />
 			</Link>
 		);

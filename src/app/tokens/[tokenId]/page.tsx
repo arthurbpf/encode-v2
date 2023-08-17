@@ -44,7 +44,7 @@ export default async function TokenDetailsPage({
 
 	return (
 		<main className="p-4 md:p-8 flex-1 flex flex-col items-center justify-center gap-8 min-w-full ">
-			<div className="flex flex-col gap-10 text-center">
+			<div className="flex flex-col gap-10 m-9 text-center">
 				<Heading as="h1">{`#${tokenInfo.id} - ${tokenInfo.metadata.title}`}</Heading>
 				<Heading as="h2">{tokenInfo.metadata.description}</Heading>
 			</div>
